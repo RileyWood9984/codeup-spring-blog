@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="post-form" method="post" th:action="@{/posts/create}" th:object="${Post}">
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title" th:field="*{title}">
+    <label for="body">Body</label>
+    <input type="text-area" name="body" id="body" th:field="*{body}">
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" th:value="2" th:id="user.id" th:name="user.id">
+    <button type="submit" formmethod="post">Submit</button>
+</form>
+</body>
+</html>

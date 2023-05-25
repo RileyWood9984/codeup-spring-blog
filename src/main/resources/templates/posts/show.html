@@ -6,7 +6,9 @@
 </head>
 <body>
 <h1>show</h1>
-<h2 th:text="${post.getTitle()}"></h2>
-<h4 th:text="${post.getBody()}"></h4>
+<h2 th:text="${post.get.getTitle()}"></h2>
+<h4 th:text="${post.get.getBody()}"></h4>
+<h4 th:text="${post.get.getUser().getEmail()}"></h4>
+
 </body>
 </html>

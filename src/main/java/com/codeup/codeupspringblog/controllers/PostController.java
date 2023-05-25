@@ -1,46 +1,59 @@
 package com.codeup.codeupspringblog.controllers;
 
+import com.codeup.codeupspringblog.repositories.PostRepository;
+import com.codeup.codeupspringblog.repositories.UserRepository;
+import com.codeup.codeupspringblog.services.EmailService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import java.util.ArrayList;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class PostController {
+    private final PostRepository postDao;
+    private final UserRepository userDao;
+
+    private final EmailService emailService;
+
+    public PostController(PostRepository postDao, UserRepository userDao, EmailService emailService) {
+        this.postDao = postDao;
+        this.userDao = userDao;
+        this.emailService = emailService;
+    }
+
     @GetMapping("/posts")
-    public String blogPost(ArrayList<Post> postList, Model model){
-        Post post1 = new Post();
-        post1.setTitle("My hell on earth");
-        post1.setBody("It was actually earth, alternate timelines an all that... and I guess technically it was the moon, but you get what I mean.");
-        postList.add(post1);
-        Post post2 = new Post();
-        post2.setTitle("Okay so it wasn't our moon, but that doesn't matter");
-        post2.setBody("The phrase my hell on the third moon of an unknown System in the Andromeda just doesn't sound as good.");
-        postList.add(post2);
-        model.addAttribute(postList);
+    public String blogPost(Model model){
+        model.addAttribute("posts",postDao.findAll());
         return"posts/index";
     }
-    @GetMapping("/post/{id}")
-    public String getBlogPost(@PathVariable String id,Model model){
-        Post post = new Post();
-        post.setTitle("So what if at the time it was the fourth moon");
-        post.setBody("Its the third moon, now. NO I am not glossing over how a planet lost a moon that isn't relevant to the story!");
-        model.addAttribute(post);
-        model.addAttribute("id",id);
-
+    @GetMapping("/post/{post_id}")
+    public String getBlogPost(@PathVariable long post_id,Model model){
+        model.addAttribute("post",postDao.findById(post_id));
         return "posts/show";
     }
+    @GetMapping("/edit")
+    public String editBlogPost(@RequestParam long id ,Model model){
+        model.addAttribute("post",postDao.findById(id));
+        return "posts/edit";
+    }
+
+    @PostMapping("/edit")
+    public String postEdit(@ModelAttribute Post post){
+        long id = post.getId();
+        System.out.println("the id is "+id);
+        post.setId(id);
+        postDao.save(post);
+        return "redirect:/posts";
+    }
+
     @GetMapping("/posts/create")
-    @ResponseBody
-    public String getCreate(){
-        return "View the form for creating a post";
+    public String getCreate(Model model){
+        model.addAttribute("Post",new Post());
+        return "posts/create";
     }
     @PostMapping("/posts/create")
-    @ResponseBody
-    public String postCreate(){
-        return "create new post";
+    public String postCreate(@ModelAttribute Post post){
+        postDao.findById(post.getId());
+        postDao.save(post);
+        return "redirect:/posts";
     }
 }
