@@ -54,6 +54,7 @@ public class PostController {
     public String postCreate(@ModelAttribute Post post){
         postDao.findById(post.getId());
         postDao.save(post);
+//        emailService.prepareAndSend(post,"The post you made",post.getTitle()+": "+post.getBody());
         return "redirect:/posts";
     }
 }
